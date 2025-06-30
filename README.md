@@ -121,6 +121,3 @@ Copy
 Edit
 
 ---
-
-Want me to tweak or expand this?  
-Just say the word!
