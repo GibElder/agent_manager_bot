@@ -1,4 +1,3 @@
-# agent_managet_bot
 # Multi-Agent Automation Platform
 
 This project is a server-hosted AI automation platform that combines OpenAI and LLaMA language models to execute complex workflows and system tasks. The platform processes natural language commands, manages integrations with Google APIs, interacts with Linux file systems, and runs continuous background security monitoring.
