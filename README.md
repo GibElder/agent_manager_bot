@@ -45,8 +45,7 @@ A modular, GPT-powered Telegram bot for managing scripts and Google Calendar wit
 ├── .env # Environment configuration
 └── requirements.txt
 
-yaml
----
+
 
 ## ⚙️ Environment Variables
 
@@ -57,8 +56,6 @@ TELEGRAM_USER_ID=your_telegram_numeric_user_id
 OPENAI_API_KEY=your_openai_key
 TIMEZONE=America/Chicago
 
-yaml
----
 
 ## 🏗️ Setup
 
@@ -87,7 +84,7 @@ Run the backup script
 
 Execute the test script with argument hello world
 
-Calendar
+**Calendar**
 
 Add a meeting with Bob tomorrow at 3pm for 45 minutes
 
@@ -102,5 +99,3 @@ Tell me a joke
 🙌 Contributions
 PRs welcome! This project is designed to be extended with new handlers and services.
 
-yaml
----
