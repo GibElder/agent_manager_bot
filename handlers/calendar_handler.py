@@ -34,20 +34,57 @@ async def handle_calendar_action(update, context, user_message):
     action = details.get("action")
 
     if action == "create_event":
-        await create_event(update, details)
+        # Save to pending and ask confirmation
+        context.user_data["pending_calendar_action"] = {"type": "create", "details": details}
+        await update.message.reply_text(
+            f"📅 I am about to create event '{details.get('title')}' on {details.get('date')} at {details.get('time')} "
+            f"for {details.get('duration_minutes') or 60} minutes.\n\nReply 'yes' to confirm or 'no' to cancel."
+        )
     elif action == "delete_event":
-        await delete_event(update, details, events)
+        # Save to pending and ask confirmation
+        context.user_data["pending_calendar_action"] = {"type": "delete", "details": details}
+        if details.get("event_id"):
+            desc = f"(ID {details.get('event_id')})"
+        else:
+            desc = f"with title '{details.get('title')}' on {details.get('date')}"
+        await update.message.reply_text(
+            f"🗑️ I am about to delete the event {desc}.\n\nReply 'yes' to confirm or 'no' to cancel."
+        )
     elif action == "list_events":
         await list_events(update, events, details)
     else:
         await update.message.reply_text("Sorry, I couldn't figure out what you wanted to do.")
+
+async def confirm_calendar_action(update, context, user_message):
+    user_message = user_message.strip().lower()
+
+    if user_message in ["no", "cancel", "never mind", "nevermind", "stop"]:
+        context.user_data.pop("pending_calendar_action", None)
+        await update.message.reply_text("❌ Okay, I’ve cancelled the calendar action.")
+        return
+
+    pending = context.user_data.pop("pending_calendar_action", None)
+    if not pending:
+        await update.message.reply_text("No calendar action pending confirmation.")
+        return
+
+    action_type = pending["type"]
+    details = pending["details"]
+
+    if action_type == "create":
+        await create_event(update, details)
+    elif action_type == "delete":
+        # Fetch fresh events so deletes don't miss new entries
+        events = fetch_and_save_events()
+        await delete_event(update, details, events)
+    else:
+        await update.message.reply_text("❌ Unknown action type.")
 
 async def delete_event(update, details, events):
     event_id = details.get("event_id")
     title = details.get("title", "").lower()
     target_date = details.get("date")
 
-    # If event_id provided, delete directly
     if event_id:
         try:
             service.events().delete(
@@ -59,15 +96,12 @@ async def delete_event(update, details, events):
             await update.message.reply_text(f"Error deleting event: {e}")
         return
 
-    # If no event_id, attempt fuzzy matching by title and date
+    # Fuzzy match
     matching = []
     for e in events:
         event_title = e["summary"].lower()
         start_dt = e["start"].get("dateTime", e["start"].get("date"))
-
-        # Compare dates in YYYY-MM-DD format
         event_date = start_dt[:10]
-
         if title in event_title and event_date == target_date:
             matching.append(e)
 
@@ -99,13 +133,11 @@ async def create_event(update, details):
         await update.message.reply_text("Missing details to create the event.")
         return
 
-    # Default duration if missing
     if not duration:
         duration = 60
     else:
         duration = int(duration)
 
-    # Combine date + time
     datetime_str = f"{date} {time}"
 
     parsed = dateparser.parse(
@@ -121,15 +153,11 @@ async def create_event(update, details):
         await update.message.reply_text(f"Could not parse date/time: {datetime_str}")
         return
 
-    # If date is still in the past, roll forward by 1 year
     now = datetime.now(tz=parsed.tzinfo)
     if parsed < now:
         parsed = parsed.replace(year=parsed.year + 1)
 
-    # Compute end time
     end_time = parsed + timedelta(minutes=duration)
-
-    # Convert to ISO UTC
     start_iso = parsed.astimezone(pytz.utc).isoformat()
     end_iso = end_time.astimezone(pytz.utc).isoformat()
 
@@ -151,7 +179,6 @@ async def create_event(update, details):
         )
     except Exception as e:
         await update.message.reply_text(f"Error creating event: {e}")
-
 
 async def list_events(update, events, details):
     filter_date = details.get("date")

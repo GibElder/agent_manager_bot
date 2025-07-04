@@ -18,6 +18,7 @@ You are an AI assistant that classifies user messages into high-level intents.
 Possible intents:
 - script: The user wants to run, list, or manage scripts on their server.
 - calendar: The user wants to create, delete, or manage calendar events.
+- server_command: The user wants to execute a Linux shell command and get the results.
 - general_chat: General questions, conversation, or anything else.
 
 Also, suggest any context you think will be needed.
@@ -25,7 +26,7 @@ Also, suggest any context you think will be needed.
 Respond ONLY in this JSON format:
 
 {{
-  "intent": "<one of: script, calendar, general_chat>",
+  "intent": "<one of: script, calendar, server_command, general_chat>",
   "context_needed": [<list of context items, e.g., script_summaries, calendar_events>],
   "notes": "<short explanation>"
 }}
@@ -44,7 +45,6 @@ User message:
         temperature=0
     )
     return json.loads(response.choices[0].message.content.strip())
-
 
 def interpret_calendar_details(message: str, calendar_events: list) -> dict:
     now_local = datetime.now(LOCAL_TZ)
