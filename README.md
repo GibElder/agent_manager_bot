@@ -1,28 +1,101 @@
-# Multi-Agent Automation Platform
+# 🧠 Agent Manager Bot
 
-This project is a server-hosted AI automation platform that combines OpenAI and LLaMA language models to execute complex workflows and system tasks. The platform processes natural language commands, manages integrations with Google APIs, interacts with Linux file systems, and runs continuous background security monitoring.
+A modular, GPT-powered Telegram bot for managing scripts and Google Calendar with natural language.
 
-## Features
+---
 
-- Natural language understanding and task parsing
-- Multi-step conversational workflows
-- Google Calendar and Drive API integration
-- File system operations and script execution
-- Background security monitoring using AI models
-- Modular design for extending additional agent capabilities
+## ✨ Features
 
-## Technologies
+**✅ Script Execution**
+- List and describe available scripts
+- Use natural prompts to run scripts with arguments
+- Confirm before executing any command
+- Logs every run and output
 
-- Python
-- OpenAI GPT models
-- LLaMA language models
-- Google API Client Libraries
-- Linux shell scripting
+**✅ Google Calendar Integration**
+- Create events just by describing them  
+  Example: *Add lunch with Sarah tomorrow at noon for 90 minutes*
+- Robust natural language deletion  
+  Example: *Delete my 2pm meeting*  
+  GPT suggests matches if ambiguous
+- Timezone-aware scheduling
 
-## Purpose
+**✅ General Chat**
+- Falls back to friendly GPT chat when the request isn’t a script or calendar action
 
-This platform was built to experiment with combining language models and traditional automation workflows to create intelligent assistants capable of managing infrastructure, scheduling, and security tasks.
+**✅ Modular Codebase**
+- Clean separation of concerns:
+  - `handlers/` for scripts & calendar logic
+  - `services/` for Google API integration
+  - `main.py` for setup and routing
 
-## Status
+---
 
-Ongoing development and experimentation. Some features and integrations are proof-of-concept.
+## 📁 Project Structure
+
+.
+├── main.py
+├── handlers/
+│ ├── general.py
+│ ├── script_handler.py
+│ └── calendar_handler.py
+├── services/
+│ └── calendar.py
+├── scripts/ # Your custom .py and .sh scripts
+├── .env # Environment configuration
+└── requirements.txt
+
+
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the project root:
+
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+TELEGRAM_USER_ID=your_telegram_numeric_user_id
+OPENAI_API_KEY=your_openai_key
+TIMEZONE=America/Chicago
+
+
+## 🏗️ Setup
+
+1. **Install dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+Authorize Google Calendar
+
+Make sure you have a credentials.json file from Google Cloud.
+
+Run your calendar_auth.py (or equivalent) to create token.pickle.
+
+Prepare your scripts
+
+Place your .sh and .py files in the scripts/ folder.
+
+🚀 Running the Bot
+```bash
+python main.py
+```
+💬 Example Commands
+Scripts
+
+Run the backup script
+
+Execute the test script with argument hello world
+
+**Calendar**
+
+Add a meeting with Bob tomorrow at 3pm for 45 minutes
+
+Delete the dentist appointment
+
+General Chat
+
+What's the weather today?
+
+Tell me a joke
+
+🙌 Contributions
+PRs welcome! This project is designed to be extended with new handlers and services.
+
