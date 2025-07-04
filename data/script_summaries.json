@@ -1,0 +1,20 @@
+[
+  {
+    "description": "This script prints a message indicating that it is a cool script.",
+    "requires_arguments": false,
+    "example_usage": "python new.py",
+    "name": "new.py"
+  },
+  {
+    "description": "This script prints a greeting message to the console.",
+    "requires_arguments": false,
+    "example_usage": "./test.sh",
+    "name": "test.sh"
+  },
+  {
+    "description": "This script prints 'hello world python' to the console.",
+    "requires_arguments": false,
+    "example_usage": "python hello.py",
+    "name": "hello.py"
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "new.py": "This script outputs the message \"this is a really cool script\" to the console.",
+  "test.sh": "This script outputs the text \"hello world from my agent\" to the console or terminal.",
+  "hello.py": "This script prints the string \"hello world python\" to the console."
+}

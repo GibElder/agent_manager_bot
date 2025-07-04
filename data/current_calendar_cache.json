@@ -1,0 +1,111 @@
+[
+  {
+    "kind": "calendar#event",
+    "etag": "\"3487703139612839\"",
+    "id": "u18st0sqn2q4ottgjkla16969o_20250824",
+    "status": "confirmed",
+    "htmlLink": "https://www.google.com/calendar/event?eid=dTE4c3Qwc3FuMnE0b3R0Z2prbGExNjk2OW9fMjAyNTA4MjQgZ2liLmVsZGVyQG0",
+    "created": "2025-01-17T19:04:20.000Z",
+    "updated": "2025-02-12T02:57:03.451Z",
+    "summary": "Happy birthday!",
+    "creator": {
+      "email": "gib.elder@gmail.com",
+      "self": true
+    },
+    "organizer": {
+      "email": "gib.elder@gmail.com",
+      "self": true
+    },
+    "start": {
+      "date": "2025-08-24"
+    },
+    "end": {
+      "date": "2025-08-25"
+    },
+    "recurringEventId": "u18st0sqn2q4ottgjkla16969o",
+    "originalStartTime": {
+      "date": "2025-08-24"
+    },
+    "transparency": "transparent",
+    "visibility": "private",
+    "iCalUID": "u18st0sqn2q4ottgjkla16969o@google.com",
+    "sequence": 0,
+    "reminders": {
+      "useDefault": false
+    },
+    "birthdayProperties": {
+      "type": "self"
+    },
+    "eventType": "birthday"
+  },
+  {
+    "kind": "calendar#event",
+    "etag": "\"3329843187416000\"",
+    "id": "qes6dqn2g1t1ovv41n15j6onvc_20251014",
+    "status": "confirmed",
+    "htmlLink": "https://www.google.com/calendar/event?eid=cWVzNmRxbjJnMXQxb3Z2NDFuMTVqNm9udmNfMjAyNTEwMTQgZ2liLmVsZGVyQG0",
+    "created": "2022-10-04T22:13:13.000Z",
+    "updated": "2022-10-04T22:13:13.708Z",
+    "summary": "Wills Birthday",
+    "creator": {
+      "email": "gib.elder@gmail.com",
+      "self": true
+    },
+    "organizer": {
+      "email": "gib.elder@gmail.com",
+      "self": true
+    },
+    "start": {
+      "date": "2025-10-14"
+    },
+    "end": {
+      "date": "2025-10-15"
+    },
+    "recurringEventId": "qes6dqn2g1t1ovv41n15j6onvc",
+    "originalStartTime": {
+      "date": "2025-10-14"
+    },
+    "transparency": "transparent",
+    "iCalUID": "qes6dqn2g1t1ovv41n15j6onvc@google.com",
+    "sequence": 0,
+    "reminders": {
+      "useDefault": false
+    },
+    "eventType": "default"
+  },
+  {
+    "kind": "calendar#event",
+    "etag": "\"3329843103438000\"",
+    "id": "sl4sc0g3trov7l0rmgo2e7tn38_20260126",
+    "status": "confirmed",
+    "htmlLink": "https://www.google.com/calendar/event?eid=c2w0c2MwZzN0cm92N2wwcm1nbzJlN3RuMzhfMjAyNjAxMjYgZ2liLmVsZGVyQG0",
+    "created": "2022-10-04T22:12:22.000Z",
+    "updated": "2022-10-04T22:12:31.719Z",
+    "summary": "Tessas Birthday",
+    "creator": {
+      "email": "gib.elder@gmail.com",
+      "self": true
+    },
+    "organizer": {
+      "email": "gib.elder@gmail.com",
+      "self": true
+    },
+    "start": {
+      "date": "2026-01-26"
+    },
+    "end": {
+      "date": "2026-01-27"
+    },
+    "recurringEventId": "sl4sc0g3trov7l0rmgo2e7tn38",
+    "originalStartTime": {
+      "date": "2026-01-26"
+    },
+    "transparency": "transparent",
+    "iCalUID": "sl4sc0g3trov7l0rmgo2e7tn38@google.com",
+    "sequence": 1,
+    "reminders": {
+      "useDefault": false
+    },
+    "eventType": "default"
+  }
+]
