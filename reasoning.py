@@ -2,9 +2,14 @@
 from openai import OpenAI
 import json
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+import os
+import pytz
+LOCAL_TZ = pytz.timezone(os.getenv("TIMEZONE", "UTC"))
+
 load_dotenv()
 client = OpenAI()
-client = OpenAI()
+
 
 def interpret_high_level_intent(message: str) -> dict:
     prompt = f"""
@@ -42,6 +47,8 @@ User message:
 
 
 def interpret_calendar_details(message: str, calendar_events: list) -> dict:
+    now_local = datetime.now(LOCAL_TZ)
+    today_str = now_local.strftime("%Y-%m-%d")
     prompt = f"""
 You are an AI assistant that determines the exact calendar action the user wants to perform.
 
@@ -55,9 +62,9 @@ Here are all upcoming calendar events in JSON:
 
 Determine the action:
 
-- If the user wants to know what events they have on a specific date (e.g., "today," "tomorrow," "July 5th"), set "action" to "list_events" and ALWAYS include "date" in YYYY-MM-DD format.
+- If the user wants to know what events they have on a specific date (e.g., "today," "tomorrow," "July 5th"), set "action" to "list_events" and ALWAYS include "date" in YYYY-MM-DD format. However, it the date is ambiguous (e.g., "next Friday"), always use the next occurrence of that day in the future. Keep in mind todays date time is TODAY'S DATE (local timezone): {today_str}, use only this as a reference to calculate dates.
 - If they want to create an event, set "action" to "create_event" and fill in as many details as possible.
-- If they want to delete an event, set "action" to "delete_event" and include "event_id" if you can identify it by title or date.
+- If they want to delete an event, set "action" to "delete_event" and include "event_id" if you can identify it by title or date. If you cannot confidently determine the event_id, leave it blank and instead fill out the "title" and "date" fields exactly matching the event to delete.
 - If you're not sure, pick the closest action and include notes explaining any uncertainty.
 
 Respond ONLY in this exact JSON format:

@@ -2,6 +2,11 @@ from datetime import datetime, timedelta
 import json
 from services.calendar import service
 from reasoning import interpret_calendar_details
+import os 
+import pytz
+import dateparser
+
+LOCAL_TZ = pytz.timezone(os.getenv("TIMEZONE", "UTC"))
 
 def fetch_and_save_events():
     now = datetime.utcnow().isoformat() + 'Z'
@@ -37,54 +42,116 @@ async def handle_calendar_action(update, context, user_message):
     else:
         await update.message.reply_text("Sorry, I couldn't figure out what you wanted to do.")
 
+async def delete_event(update, details, events):
+    event_id = details.get("event_id")
+    title = details.get("title", "").lower()
+    target_date = details.get("date")
+
+    # If event_id provided, delete directly
+    if event_id:
+        try:
+            service.events().delete(
+                calendarId='primary',
+                eventId=event_id
+            ).execute()
+            await update.message.reply_text("🗑️ Event deleted successfully.")
+        except Exception as e:
+            await update.message.reply_text(f"Error deleting event: {e}")
+        return
+
+    # If no event_id, attempt fuzzy matching by title and date
+    matching = []
+    for e in events:
+        event_title = e["summary"].lower()
+        start_dt = e["start"].get("dateTime", e["start"].get("date"))
+
+        # Compare dates in YYYY-MM-DD format
+        event_date = start_dt[:10]
+
+        if title in event_title and event_date == target_date:
+            matching.append(e)
+
+    if len(matching) == 0:
+        await update.message.reply_text("❌ Could not find any event matching that title and date.")
+    elif len(matching) == 1:
+        try:
+            service.events().delete(
+                calendarId='primary',
+                eventId=matching[0]['id']
+            ).execute()
+            await update.message.reply_text(f"🗑️ Deleted event '{matching[0]['summary']}' on {target_date}.")
+        except Exception as e:
+            await update.message.reply_text(f"Error deleting event: {e}")
+    else:
+        message = "⚠️ Found multiple matching events:\n\n"
+        for e in matching:
+            message += f"- {e['summary']} at {e['start'].get('dateTime', e['start'].get('date'))}\n"
+        message += "\nPlease be more specific."
+        await update.message.reply_text(message)
+
 async def create_event(update, details):
     title = details.get("title")
     date = details.get("date")
     time = details.get("time")
     duration = details.get("duration_minutes")
 
-    if not (title and date and time and duration):
+    if not (title and date and time):
         await update.message.reply_text("Missing details to create the event.")
         return
 
-    try:
-        start_datetime = f"{date}T{time}:00"
-        end_time = datetime.fromisoformat(start_datetime) + timedelta(minutes=int(duration))
-        end_datetime = end_time.isoformat()
-    except Exception as e:
-        await update.message.reply_text(f"Invalid date/time format: {e}")
+    # Default duration if missing
+    if not duration:
+        duration = 60
+    else:
+        duration = int(duration)
+
+    # Combine date + time
+    datetime_str = f"{date} {time}"
+
+    parsed = dateparser.parse(
+        datetime_str,
+        settings={
+            "TIMEZONE": str(LOCAL_TZ),
+            "RETURN_AS_TIMEZONE_AWARE": True,
+            "PREFER_DATES_FROM": "future"
+        }
+    )
+
+    if not parsed:
+        await update.message.reply_text(f"Could not parse date/time: {datetime_str}")
         return
+
+    # If date is still in the past, roll forward by 1 year
+    now = datetime.now(tz=parsed.tzinfo)
+    if parsed < now:
+        parsed = parsed.replace(year=parsed.year + 1)
+
+    # Compute end time
+    end_time = parsed + timedelta(minutes=duration)
+
+    # Convert to ISO UTC
+    start_iso = parsed.astimezone(pytz.utc).isoformat()
+    end_iso = end_time.astimezone(pytz.utc).isoformat()
 
     event = {
         'summary': title,
-        'start': {'dateTime': start_datetime, 'timeZone': 'UTC'},
-        'end': {'dateTime': end_datetime, 'timeZone': 'UTC'}
+        'start': {'dateTime': start_iso, 'timeZone': 'UTC'},
+        'end': {'dateTime': end_iso, 'timeZone': 'UTC'}
     }
+
+    print("DEBUG Event payload:", json.dumps(event, indent=2))
 
     try:
         created_event = service.events().insert(
             calendarId='primary',
             body=event
         ).execute()
-        await update.message.reply_text(f"✅ Event '{title}' created successfully.")
+        await update.message.reply_text(
+            f"✅ Event '{title}' created for {parsed.strftime('%Y-%m-%d %H:%M %Z')}."
+        )
     except Exception as e:
         await update.message.reply_text(f"Error creating event: {e}")
 
-async def delete_event(update, details, events):
-    event_id = details.get("event_id")
-
-    if not event_id:
-        await update.message.reply_text("I couldn't identify which event to delete.")
-        return
-
-    try:
-        service.events().delete(
-            calendarId='primary',
-            eventId=event_id
-        ).execute()
-        await update.message.reply_text("🗑️ Event deleted successfully.")
-    except Exception as e:
-        await update.message.reply_text(f"Error deleting event: {e}")
 
 async def list_events(update, events, details):
     filter_date = details.get("date")
