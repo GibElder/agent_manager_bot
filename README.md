@@ -1,101 +1,102 @@
-# 🧠 Agent Manager Bot
+# Intelligent Server Interaction Agent
 
-A modular, GPT-powered Telegram bot for managing scripts and Google Calendar with natural language.
+This project is a web-based AI assistant designed to interact with your Linux server through natural language commands. It supports executing shell commands, managing files and directories, editing scripts, reviewing system state, and more — all based on conversational inputs.
 
----
-
-## ✨ Features
-
-**✅ Script Execution**
-- List and describe available scripts
-- Use natural prompts to run scripts with arguments
-- Confirm before executing any command
-- Logs every run and output
-
-**✅ Google Calendar Integration**
-- Create events just by describing them  
-  Example: *Add lunch with Sarah tomorrow at noon for 90 minutes*
-- Robust natural language deletion  
-  Example: *Delete my 2pm meeting*  
-  GPT suggests matches if ambiguous
-- Timezone-aware scheduling
-
-**✅ General Chat**
-- Falls back to friendly GPT chat when the request isn’t a script or calendar action
-
-**✅ Modular Codebase**
-- Clean separation of concerns:
-  - `handlers/` for scripts & calendar logic
-  - `services/` for Google API integration
-  - `main.py` for setup and routing
+The assistant uses OpenAI models and a local vector database (Chroma) to reason over server context and decide what actions to take. Over time, it will support deeper context awareness, including chat history, installed tools, and multi-step task planning.
 
 ---
 
-## 📁 Project Structure
+## Current Features
 
-.
-├── main.py
-├── handlers/
-│ ├── general.py
-│ ├── script_handler.py
-│ └── calendar_handler.py
-├── services/
-│ └── calendar.py
-├── scripts/ # Your custom .py and .sh scripts
-├── .env # Environment configuration
-└── requirements.txt
+- Run shell commands from natural language
+- Edit and execute server-side scripts
+- Retrieve summaries of files and directories
+- Use full chat history as context for reasoning
+- Multi-intent classification: run commands, modify files, respond conversationally
+- Custom handler architecture for more complex actions
+- Safety checks and confirmation prompts before dangerous actions
 
+---
 
+## Roadmap
 
-## ⚙️ Environment Variables
+We are currently transitioning from a Telegram-based agent to a full web app interface and expanding the assistant’s capabilities with:
 
-Create a `.env` file in the project root:
+- A Chroma-based vector store for:
+  - Script metadata and summaries
+  - System information (tools, OS, services)
+  - File and directory summaries
+- A smart file/directory indexer that scans the system and updates the vector DB
+- Prior chat history context injection for more conversational flow and follow-ups
+- Long-term goal: replace rigid pipelines with intelligent reasoning that adapts to the task
 
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-TELEGRAM_USER_ID=your_telegram_numeric_user_id
-OPENAI_API_KEY=your_openai_key
-TIMEZONE=America/Chicago
+Example use cases to support soon:
 
+- “What scripts have backup in the name?”
+- “Edit the python file in the directory with my flask app.”
+- “Restart the thing I just ran.”
+- “Fix the error I just got and try again.”
+- “Push the latest code to GitHub.”
 
-## 🏗️ Setup
+---
 
-1. **Install dependencies**
+## Setup
 
-   ```bash
-   pip install -r requirements.txt
-Authorize Google Calendar
+### Requirements
 
-Make sure you have a credentials.json file from Google Cloud.
+- Python 3.11+
+- A running Linux server or WSL instance
+- OpenAI API key
+- Chroma vector database (local mode)
+- Pipenv or `venv` for Python environments
 
-Run your calendar_auth.py (or equivalent) to create token.pickle.
+### Install
 
-Prepare your scripts
+1. Clone the repo:
 
-Place your .sh and .py files in the scripts/ folder.
-
-🚀 Running the Bot
 ```bash
-python main.py
+git clone https://github.com/yourusername/server-ai-agent.git
+cd server-ai-agent
 ```
-💬 Example Commands
-Scripts
 
-Run the backup script
+2. Set up environment:
 
-Execute the test script with argument hello world
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-**Calendar**
+3. Set environment variables (you can use a `.env` file):
 
-Add a meeting with Bob tomorrow at 3pm for 45 minutes
+```
+OPENAI_API_KEY=your_key
+TIMEZONE=America/Chicago
+```
 
-Delete the dentist appointment
+4. Run the indexer to build initial context:
 
-General Chat
+```bash
+python tools/index_files.py
+```
 
-What's the weather today?
+5. Start the web app (coming soon)
 
-Tell me a joke
+---
 
-🙌 Contributions
-PRs welcome! This project is designed to be extended with new handlers and services.
+## Structure
 
+- `reasoning/` — prompt logic and planning functions
+- `handlers/` — complex multi-step task handlers (file edit, git, etc.)
+- `tools/` — scripts for indexing, summarizing, and vectorizing server content
+- `data/` — vector database files, summaries, etc.
+- `services/` — optional integrations (e.g., calendar, logging)
+- `main.py` — orchestrates the flow for user interaction
+
+---
+
+## Status
+
+This project is under active development and intended to evolve into a powerful personal assistant for server automation, observability, and development workflows.
+
+Contributions welcome.
